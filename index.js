@@ -17,12 +17,18 @@ const fetchCategory = () => {
           "btn-ghost",
           "bg-slate-700",
           "text-white",
-          "text-lg"
+          "text-lg",
+          "category-btn"
         );
         newButton.innerText = item.category;
-        newButton.addEventListener("click", () =>
-          fetchDataCategories(item.category_id)
-        );
+        newButton.addEventListener("click", () => {
+          fetchDataCategories(item.category_id);
+          const allBtns = document.querySelectorAll(".category-btn");
+          for (const btn of allBtns) {
+            btn.classList.remove("bg-red-600");
+          }
+          newButton.classList.add("bg-red-600");
+        });
         btnContainer.appendChild(newButton);
       });
     });
