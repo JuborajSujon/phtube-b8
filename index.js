@@ -1,5 +1,6 @@
 const btnContainer = document.getElementById("btn-container");
 const cardContainer = document.getElementById("card-container");
+const errorEle = document.getElementById("error-element");
 
 let selectedCategory = "1000";
 
@@ -34,6 +35,13 @@ const fetchDataCategories = (categoryId) => {
     .then((res) => res.json())
     .then(({ data }) => {
       cardContainer.innerHTML = "";
+
+      if (data.length === 0) {
+        errorEle.classList.remove("hidden");
+      } else {
+        errorEle.classList.add("hidden");
+      }
+
       data.forEach((video) => {
         // console.log(video);
         let varifiedBadge = "";
