@@ -1,8 +1,10 @@
 const btnContainer = document.getElementById("btn-container");
 const cardContainer = document.getElementById("card-container");
 const errorEle = document.getElementById("error-element");
+const sortBtn = document.getElementById("sort-btn");
 
 let selectedCategory = "1000";
+let sortbyView = false;
 
 const fetchCategory = () => {
   const url = `https://openapi.programming-hero.com/api/videos/categories`;
@@ -34,14 +36,27 @@ const fetchCategory = () => {
     });
 };
 
-const fetchDataCategories = (categoryId) => {
+const fetchDataCategories = (categoryId, sortbyView) => {
   selectedCategory = categoryId;
   const url = `https://openapi.programming-hero.com/api/videos/category/${categoryId}`;
   fetch(url)
     .then((res) => res.json())
     .then(({ data }) => {
       cardContainer.innerHTML = "";
+      // sorted data
+      if (sortbyView) {
+        data.sort((a, b) => {
+          const totalViewsStrFirst = a?.others?.views;
+          const totalViewsStrSecond = b?.others?.views;
+          const totalViewsStrFirstNumber =
+            parseFloat(totalViewsStrFirst.replace("K", "")) || 0;
+          const totalViewsStrSecondNumber =
+            parseFloat(totalViewsStrSecond.replace("K", "")) || 0;
 
+          return totalViewsStrSecondNumber - totalViewsStrFirstNumber;
+        });
+      }
+      // Error handle - if any category data not found
       if (data.length === 0) {
         errorEle.classList.remove("hidden");
       } else {
@@ -50,10 +65,14 @@ const fetchDataCategories = (categoryId) => {
 
       data.forEach((video) => {
         // console.log(video);
+
+        //image badge handle if author verified or not
         let varifiedBadge = "";
         if (video?.authors[0]?.verified) {
           varifiedBadge = `<img class='w-6 h-6' src=${"./images/verify.png"} alt=''>`;
         }
+
+        // create child element for templete out html
         const newCard = document.createElement("div");
         newCard.className = `card w-full bg-base-100 shadow-xl`;
         newCard.innerHTML = `
@@ -82,5 +101,10 @@ const fetchDataCategories = (categoryId) => {
     });
 };
 
+sortBtn.addEventListener("click", () => {
+  sortbyView = true;
+  fetchDataCategories(selectedCategory, sortbyView);
+});
+
 fetchCategory();
-fetchDataCategories(selectedCategory);
+fetchDataCategories(selectedCategory, sortbyView);
